@@ -1,26 +1,126 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { Component } from 'react';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import FeedItems from './components/feeditems';
+
+
+class App extends Component {
+  state = {
+    feed: [],
+    filteredFeed: [],
+    filteredReadLater: [],
+    search: '',
+    username: 'quintonweenink'
+  }
+
+  constructor(props) {
+    super(props)
+
+    this.handler = this.handler.bind(this)
+  }
+
+  componentDidMount() {
+    this.setup()
+  }
+
+  async setup() {
+    try {
+      const events = await fetch(`https://api.github.com/users/${this.state.username}/received_events`)
+        .then(res => res.json())
+        .then(array => array.slice(0, 2)) //Reduce load on api so that I don't hit usage limits
+
+      const readMores = await fetch(`https://github-feed-quintonweenink.herokuapp.com/read-later/${this.state.username}`)
+        .then(res => res.json())
+        .catch(error => {
+          console.log(error)
+        })
+
+      const repos = await Promise.all(events.map(event => {
+        return fetch(event.repo.url)
+          .then(res => res.json())
+      }))
+
+      const result = events.map((event, index) => {
+        event.repo.description = repos[index].description
+        event.readLater = readMores.items.some((id) => id === event.id)
+        return event
+      })
+
+      const readLater = result.filter((event, index) => {
+        return event.readLater
+      })
+
+      this.setState({
+        feed: result,
+        filteredFeed: result,
+        filteredReadLater: readLater
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  handler(feedItem) {
+
+    const result = this.state.feed
+
+    result.forEach((event, index) => {
+      if (event.id === feedItem.id) {
+        result[index] = feedItem
+      }
+    })
+
+    this.setState({
+      feed: result
+    })
+
+    this.filterFeed(this.state.search)
+  }
+
+  filterFeed(searchValue) {
+    const filteredResult = this.state.feed.filter((event) => {
+      return event.repo.description.toLowerCase().search(
+        searchValue.toLowerCase()) !== -1;
+    });
+
+    const readLater = filteredResult.filter((event) => {
+      return event.readLater
+    })
+
+    this.setState({
+      search: searchValue,
+      filteredFeed: filteredResult,
+      filteredReadLater: readLater
+    })
+  }
+
+  searchChange = (e) => {
+    this.filterFeed(e.target.value)
+  }
+
+  usernameChange = (e) => {
+    this.setState({
+      username: e.target.value
+    })
+  }
+
+  refreshClick = (e) => {
+    this.setup()
+  }
+
+  render() {
+    return (
+      <div>
+        <input type="text" lable='Search' placeholder="Search" onChange={this.searchChange} />
+        <input type="text" lable='Search' placeholder="Search" onChange={this.usernameChange} value={this.state.username} />
+        <button onClick={this.refreshClick}>
+          Refresh
+              </button>
+        <FeedItems feedItems={this.state.filteredFeed} username={this.state.username} handler={this.handler} />
+        <FeedItems feedItems={this.state.filteredReadLater} username={this.state.username} handler={this.handler} />
+      </div>
+    )
+  }
 }
 
 export default App;
