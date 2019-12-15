@@ -10,7 +10,8 @@ class App extends Component {
     filteredFeed: [],
     filteredReadLater: [],
     search: '',
-    username: 'quintonweenink'
+    username: 'quintonweenink',
+    errorMessage: ''
   }
 
   constructor(props) {
@@ -26,14 +27,28 @@ class App extends Component {
   async setup() {
     try {
       const events = await fetch(`https://api.github.com/users/${this.state.username}/received_events`)
+        .then(res => {
+          if (!res.ok) {
+            throw new Error(res.status)
+          }
+          return res
+        })
         .then(res => res.json())
-        .then(array => array.slice(0, 2)) //Reduce load on api so that I don't hit usage limits
+        .catch(error => {
+          this.setState({errorMessage: 'Github user not found'})
+        })
+
+        await fetch(`https://github-feed-quintonweenink.herokuapp.com/read-later/${this.state.username}`, {
+          method: 'PUT',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify([])
+        })
+          .then(createRes => createRes.json())
+          .then(createRes => console.log(createRes))
 
       const readMores = await fetch(`https://github-feed-quintonweenink.herokuapp.com/read-later/${this.state.username}`)
         .then(res => res.json())
-        .catch(error => {
-          console.log(error)
-        })
+
 
       const repos = await Promise.all(events.map(event => {
         return fetch(event.repo.url)
@@ -56,6 +71,7 @@ class App extends Component {
         filteredReadLater: readLater
       })
     } catch (error) {
+      console.log("I am here")
       console.log(error)
     }
   }
@@ -99,24 +115,33 @@ class App extends Component {
   }
 
   usernameChange = (e) => {
+    this.setState({errorMessage: ''})
     this.setState({
       username: e.target.value
     })
   }
 
   refreshClick = (e) => {
+    this.setState({
+      feed: [],
+      filteredFeed: [],
+      filteredReadLater: []
+    })
     this.setup()
   }
 
   render() {
     return (
       <div>
+        <p>{this.state.errorMessage}</p>
         <input type="text" lable='Search' placeholder="Search" onChange={this.searchChange} />
-        <input type="text" lable='Search' placeholder="Search" onChange={this.usernameChange} value={this.state.username} />
+        <input type="text" lable='Username' placeholder="Username" onChange={this.usernameChange} value={this.state.username} />
         <button onClick={this.refreshClick}>
           Refresh
-              </button>
+        </button>
+        <center><h1>Latest github events</h1></center>
         <FeedItems feedItems={this.state.filteredFeed} username={this.state.username} handler={this.handler} />
+        <center><h1>Read later</h1></center>
         <FeedItems feedItems={this.state.filteredReadLater} username={this.state.username} handler={this.handler} />
       </div>
     )

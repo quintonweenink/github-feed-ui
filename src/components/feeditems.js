@@ -28,15 +28,25 @@ class FeedItems extends Component {
   render() {
     return (
       <div>
-        <center><h1>Feed Items</h1></center>
+        <h2>{!this.props.feedItems || this.props.feedItems.length < 1 ? "No Items" : ""}</h2>
         {this.props.feedItems.map((feedItem) => (
-          <div className='card' key={feedItem.id}>
-            <div className='card-body'>
-              <h2 className='card-title'>{feedItem.actor.login}</h2>
-              <h2 className='card-subtitle mb-2 text-muted'>{feedItem.repo.name}</h2>
+          <div style={{ padding: '1vmin' }} key={feedItem.id}>
+            <div style={{ borderBottomStyle: 'solid', borderWidth: '1px', borderColor: 'grey' }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <img style={{ borderRadius: '1vmin', height: '5vmin', marginRight: '2vmin' }} src={feedItem.actor.avatar_url} alt='avatar'></img>
+                <span style={{ fontWeight: 'bold' }}>
+                  {feedItem.actor.login}
+                </span>
+                <span style={{ margin: '1vmin' }}>
+                  {' ' + (feedItem.payload.action ? feedItem.payload.action : '-') + ' '}
+                </span>
+                <span style={{ fontWeight: 'bold' }}>
+                  {feedItem.repo.name}
+                </span>
+              </div>
+              <h3 className='card-subtitle mb-2 text-muted'>{feedItem.repo.name}</h3>
               <h3 className='card-text'>{feedItem.created_at}</h3>
               <h3 className='card-text'>{feedItem.repo.description}</h3>
-              <img className='avatar' src={feedItem.actor.avatar_url} alt='avatar'></img>
               <button onClick={() => this.readLater(feedItem)}>
                 {feedItem.readLater ? "Ready to read later" : "Read Later"}
               </button>
