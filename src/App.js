@@ -34,21 +34,21 @@ class App extends Component {
           return res
         })
         .then(res => res.json())
+        .then(res => res.slice(0, 2))
         .catch(error => {
-          this.setState({errorMessage: 'Github user not found'})
+          this.setState({ errorMessage: 'Github user not found' })
         })
 
-        await fetch(`https://github-feed-quintonweenink.herokuapp.com/read-later/${this.state.username}`, {
-          method: 'PUT',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify([])
-        })
-          .then(createRes => createRes.json())
-          .then(createRes => console.log(createRes))
+      await fetch(`https://github-feed-quintonweenink.herokuapp.com/read-later/${this.state.username}`, {
+        method: 'PUT',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify([])
+      })
+        .then(createRes => createRes.json())
+        .then(createRes => console.log(createRes))
 
       const readMores = await fetch(`https://github-feed-quintonweenink.herokuapp.com/read-later/${this.state.username}`)
         .then(res => res.json())
-
 
       const repos = await Promise.all(events.map(event => {
         return fetch(event.repo.url)
@@ -71,7 +71,6 @@ class App extends Component {
         filteredReadLater: readLater
       })
     } catch (error) {
-      console.log("I am here")
       console.log(error)
     }
   }
@@ -95,8 +94,7 @@ class App extends Component {
 
   filterFeed(searchValue) {
     const filteredResult = this.state.feed.filter((event) => {
-      return event.repo.description.toLowerCase().search(
-        searchValue.toLowerCase()) !== -1;
+      return event.repo.description.toLowerCase().search(searchValue.toLowerCase()) !== -1;
     });
 
     const readLater = filteredResult.filter((event) => {
@@ -115,7 +113,7 @@ class App extends Component {
   }
 
   usernameChange = (e) => {
-    this.setState({errorMessage: ''})
+    this.setState({ errorMessage: '' })
     this.setState({
       username: e.target.value
     })
@@ -135,7 +133,7 @@ class App extends Component {
       <div>
         <p>{this.state.errorMessage}</p>
         <input type="text" lable='Search' placeholder="Search" onChange={this.searchChange} />
-        <input type="text" lable='Username' placeholder="Username" onChange={this.usernameChange} value={this.state.username} />
+        <input type="text" lable='Username' placeholder="Username" onChange={this.usernameChange} />
         <button onClick={this.refreshClick}>
           Refresh
         </button>
