@@ -131,17 +131,25 @@ class App extends Component {
   render() {
     return (
       <div>
+        <div style={{padding: '2vmin'}}>
+          <input type="text" lable='Search' placeholder="Search" onChange={this.searchChange} />
+          <input type="text" lable='Username' placeholder="Username" onChange={this.usernameChange} />
+          <button onClick={this.refreshClick}>
+            Refresh
+          </button>
+        </div>
         <p>{this.state.errorMessage}</p>
-        <input type="text" lable='Search' placeholder="Search" onChange={this.searchChange} />
-        <input type="text" lable='Username' placeholder="Username" onChange={this.usernameChange} />
-        <button onClick={this.refreshClick}>
-          Refresh
-        </button>
-        <center><h1>Latest github events</h1></center>
-        <FeedItems feedItems={this.state.filteredFeed} username={this.state.username} handler={this.handler} />
-        <center><h1>Read later</h1></center>
-        <FeedItems feedItems={this.state.filteredReadLater} username={this.state.username} handler={this.handler} />
-      </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))' }}>
+          <div>
+            <center><h1>Latest github events</h1></center>
+            <FeedItems feedItems={this.state.filteredFeed} username={this.state.username} handler={this.handler} />
+          </div>
+          <div>
+            <center><h1>Read later</h1></center>
+            <FeedItems feedItems={this.state.filteredReadLater} username={this.state.username} handler={this.handler} />
+          </div>
+        </div>
+      </div >
     )
   }
 }

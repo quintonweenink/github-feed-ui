@@ -31,7 +31,7 @@ class FeedItems extends Component {
         <h2>{!this.props.feedItems || this.props.feedItems.length < 1 ? "No Items" : ""}</h2>
         {this.props.feedItems.map((feedItem) => (
           <div style={{ padding: '1vmin' }} key={feedItem.id}>
-            <div style={{ borderBottomStyle: 'solid', borderWidth: '1px', borderColor: 'grey' }}>
+            <div >
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <img style={{ borderRadius: '1vmin', height: '5vmin', marginRight: '2vmin' }} src={feedItem.actor.avatar_url} alt='avatar'></img>
                 <span style={{ fontWeight: 'bold' }}>
@@ -44,7 +44,7 @@ class FeedItems extends Component {
                   {feedItem.repo.name}
                 </span>
               </div>
-              <div style={{ borderRadius: '1vmin', margin: '1vmin', padding: '3vmin', border: 'solid', borderWidth: '1px', borderColor: 'grey' }}>
+              <div style={{ borderRadius: '1vmin', margin: '1vmin', padding: '1vmin', border: 'solid', borderWidth: '1px', borderColor: 'grey' }}>
                 <h3>{feedItem.repo.name}</h3>
                 <h3>{feedItem.created_at}</h3>
                 <h4>{feedItem.repo.description}</h4>
