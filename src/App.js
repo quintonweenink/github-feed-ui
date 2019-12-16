@@ -10,7 +10,8 @@ class App extends Component {
     filteredReadLater: [],
     search: localStorage.getItem('githubSearch') ? localStorage.getItem('githubSearch') : '',
     username: localStorage.getItem('githubUsername') ? localStorage.getItem('githubUsername') : 'quintonweenink',
-    errorMessage: ''
+    errorMessage: '',
+    hideFeed: false
   }
 
   constructor(props) {
@@ -135,6 +136,12 @@ class App extends Component {
     this.setup()
   }
 
+  feedButtonClick = (e) => {
+    this.setState({
+      hideFeed: !this.state.hideFeed
+    })
+  }
+
   render() {
     return (
       <div>
@@ -148,12 +155,20 @@ class App extends Component {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))' }}>
           <div>
-            <center><h1>Remembered events</h1></center>
-            <FeedItems feedItems={this.state.filteredReadLater} username={this.state.username} handler={this.handler} />
+            <center>
+            <button style={{ float: 'right', padding: '1vmin', marginRight: '2vmin' }} onClick={this.feedButtonClick}>
+              {this.state.hideFeed ? 'Show feed' : 'Hide feed'}
+              </button>
+              <h2>Latest github events</h2>
+            </center>
+            { !this.state.hideFeed ?
+            <FeedItems feedItems={this.state.filteredFeed} username={this.state.username} handler={this.handler} />
+            : <center>...</center>
+            }
           </div>
           <div>
-            <center><h1>Latest github events</h1></center>
-            <FeedItems feedItems={this.state.filteredFeed} username={this.state.username} handler={this.handler} />
+            <center><h2>Remembered events</h2></center>
+            <FeedItems feedItems={this.state.filteredReadLater} username={this.state.username} handler={this.handler} />
           </div>
         </div>
       </div >

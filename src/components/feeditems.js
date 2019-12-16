@@ -28,7 +28,7 @@ class FeedItems extends Component {
   render() {
     return (
       <div>
-        <h2>{!this.props.feedItems || this.props.feedItems.length < 1 ? "No Items" : ""}</h2>
+        <h3>{!this.props.feedItems || this.props.feedItems.length < 1 ? <center>No Items</center> : ""}</h3>
         {this.props.feedItems.map((feedItem) => (
           <div style={{ padding: '1vmin' }} key={feedItem.id}>
             <div >
