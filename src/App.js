@@ -3,15 +3,14 @@ import './App.css';
 
 import FeedItems from './components/feeditems';
 
-
 class App extends Component {
   state = {
     feed: [],
     filteredFeed: [],
     filteredReadLater: [],
-    search: '',
+    search: localStorage.getItem('githubSearch') ? localStorage.getItem('githubSearch') : '',
     username: localStorage.getItem('githubUsername') ? localStorage.getItem('githubUsername') : 'quintonweenink',
-    errorMessage: localStorage.getItem('githubSearch') ? localStorage.getItem('githubSearch') : ''
+    errorMessage: ''
   }
 
   constructor(props) {
@@ -77,7 +76,6 @@ class App extends Component {
   }
 
   handler(feedItem) {
-
     const result = this.state.feed
 
     result.forEach((event, index) => {
@@ -135,13 +133,13 @@ class App extends Component {
     return (
       <div>
         <div style={{ padding: '2vmin' }}>
-          Search: <input type="text" lable='Search' placeholder="Search" onChange={this.searchChange} /><br/>
           Username: <input type="text" lable='Username' placeholder="Username" onChange={this.usernameChange} value={this.state.username} />
           <button onClick={this.refreshClick}>
-            Refresh
+            Update username
           </button>
+          <p style={{color: 'red  '}}>{this.state.errorMessage}</p>
+          Search: <input type="text" lable='Search' placeholder="Search" onChange={this.searchChange} />
         </div>
-        <p>{this.state.errorMessage}</p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))' }}>
           <div>
             <center><h1>Latest github events</h1></center>
