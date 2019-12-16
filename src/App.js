@@ -97,9 +97,9 @@ class App extends Component {
   filterFeed(searchValue) {
     const filteredResult = this.state.feed.filter((event) => {
       return event.repo.description.toLowerCase().search(searchValue.toLowerCase()) !== -1 ||
-      event.repo.name.toLowerCase().search(searchValue.toLowerCase()) !== -1 ||
-      event.payload.action.toLowerCase().search(searchValue.toLowerCase()) !== -1 ||
-      event.created_at.substring(0, 10).toLowerCase().search(searchValue.toLowerCase()) !== -1;
+        event.repo.name.toLowerCase().search(searchValue.toLowerCase()) !== -1 ||
+        event.payload.action.toLowerCase().search(searchValue.toLowerCase()) !== -1 ||
+        event.created_at.substring(0, 10).toLowerCase().search(searchValue.toLowerCase()) !== -1;
     });
 
     const readLater = filteredResult.filter((event) => {
@@ -143,17 +143,17 @@ class App extends Component {
           <button onClick={this.refreshClick}>
             Update username
           </button>
-          <p style={{color: 'red  '}}>{this.state.errorMessage}</p>
-          Search: <input type="text" lable='Search' placeholder="Search" onChange={this.searchChange} value={this.state.search}/>
+          <p style={{ color: 'red  ' }}>{this.state.errorMessage}</p>
+          Search: <input type="text" lable='Search' placeholder="Search" onChange={this.searchChange} value={this.state.search} />
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))' }}>
           <div>
-            <center><h1>Latest github events</h1></center>
-            <FeedItems feedItems={this.state.filteredFeed} username={this.state.username} handler={this.handler} />
-          </div>
-          <div>
             <center><h1>Remembered events</h1></center>
             <FeedItems feedItems={this.state.filteredReadLater} username={this.state.username} handler={this.handler} />
+          </div>
+          <div>
+            <center><h1>Latest github events</h1></center>
+            <FeedItems feedItems={this.state.filteredFeed} username={this.state.username} handler={this.handler} />
           </div>
         </div>
       </div >
