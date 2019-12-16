@@ -34,7 +34,6 @@ class App extends Component {
           return res
         })
         .then(res => res.json())
-        .then(res => res.slice(0, 2))
         .catch(error => {
           this.setState({ errorMessage: 'Github user not found' })
         })
@@ -56,7 +55,7 @@ class App extends Component {
       }))
 
       const result = events.map((event, index) => {
-        event.repo.description = repos[index].description
+        event.repo.description = repos[index].description ? repos[index].description : 'No description'
         event.readLater = readMores.items.some((id) => id === event.id)
         return event
       })

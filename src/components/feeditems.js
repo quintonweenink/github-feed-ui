@@ -49,7 +49,7 @@ class FeedItems extends Component {
                 <h3>{feedItem.created_at}</h3>
                 <h4>{feedItem.repo.description}</h4>
                 <button onClick={() => this.readLater(feedItem)}>
-                  {feedItem.readLater ? "Ready to read later" : "Read Later"}
+                  {feedItem.readLater ? 'Forget' : 'Remember'}
                 </button>
               </div>
             </div>
