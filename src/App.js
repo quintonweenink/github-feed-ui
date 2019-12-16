@@ -58,6 +58,7 @@ class App extends Component {
         event.repo.description = repos[index].description ? repos[index].description : 'No description'
         event.repo.fetchedDetails = repos[index]
         event.readLater = readMores.items.some((id) => id === event.id)
+        event.payload.action = event.payload.action ? event.payload.action : '-'
         return event
       })
 
@@ -70,6 +71,8 @@ class App extends Component {
         filteredFeed: result,
         filteredReadLater: readLater
       })
+
+      this.filterFeed(this.state.search)
     } catch (error) {
       console.log(error)
     }
@@ -93,7 +96,10 @@ class App extends Component {
 
   filterFeed(searchValue) {
     const filteredResult = this.state.feed.filter((event) => {
-      return event.repo.description.toLowerCase().search(searchValue.toLowerCase()) !== -1;
+      return event.repo.description.toLowerCase().search(searchValue.toLowerCase()) !== -1 ||
+      event.repo.name.toLowerCase().search(searchValue.toLowerCase()) !== -1 ||
+      event.payload.action.toLowerCase().search(searchValue.toLowerCase()) !== -1 ||
+      event.created_at.substring(0, 10).toLowerCase().search(searchValue.toLowerCase()) !== -1;
     });
 
     const readLater = filteredResult.filter((event) => {
@@ -138,7 +144,7 @@ class App extends Component {
             Update username
           </button>
           <p style={{color: 'red  '}}>{this.state.errorMessage}</p>
-          Search: <input type="text" lable='Search' placeholder="Search" onChange={this.searchChange} />
+          Search: <input type="text" lable='Search' placeholder="Search" onChange={this.searchChange} value={this.state.search}/>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))' }}>
           <div>
