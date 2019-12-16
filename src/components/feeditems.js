@@ -45,12 +45,12 @@ class FeedItems extends Component {
                 </span>
               </div>
               <div style={{ borderRadius: '1vmin', margin: '1vmin', padding: '1vmin', border: 'solid', borderWidth: '1px', borderColor: 'grey' }}>
-                <h3>{feedItem.repo.name}</h3>
-                <h3>{feedItem.created_at}</h3>
-                <h4>{feedItem.repo.description}</h4>
-                <button onClick={() => this.readLater(feedItem)}>
+              <button style={{float: 'right'}} onClick={() => this.readLater(feedItem)}>
                   {feedItem.readLater ? 'Forget' : 'Remember'}
                 </button>
+                <h3 style={{ margin: '1vmin'}}>{feedItem.repo.name} - {feedItem.created_at.substring(0, 10)}</h3>
+                <h4 style={{ margin: '1vmin'}}>{feedItem.repo.description}</h4>
+                
               </div>
             </div>
           </div>

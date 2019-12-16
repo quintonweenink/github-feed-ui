@@ -10,8 +10,8 @@ class App extends Component {
     filteredFeed: [],
     filteredReadLater: [],
     search: '',
-    username: 'quintonweenink',
-    errorMessage: ''
+    username: localStorage.getItem('githubUsername') ? localStorage.getItem('githubUsername') : 'quintonweenink',
+    errorMessage: localStorage.getItem('githubSearch') ? localStorage.getItem('githubSearch') : ''
   }
 
   constructor(props) {
@@ -35,7 +35,8 @@ class App extends Component {
         })
         .then(res => res.json())
         .catch(error => {
-          this.setState({ errorMessage: 'Github user not found' })
+          const message = error.message === '404' ? 'Github username not found' : 'API rate limit exceeded'
+          this.setState({ errorMessage: message })
         })
 
       await fetch(`https://github-feed-quintonweenink.herokuapp.com/read-later/${this.state.username}`, {
@@ -56,6 +57,7 @@ class App extends Component {
 
       const result = events.map((event, index) => {
         event.repo.description = repos[index].description ? repos[index].description : 'No description'
+        event.repo.fetchedDetails = repos[index]
         event.readLater = readMores.items.some((id) => id === event.id)
         return event
       })
@@ -108,11 +110,13 @@ class App extends Component {
   }
 
   searchChange = (e) => {
+    localStorage.setItem('githubSearch', e.target.value);
     this.filterFeed(e.target.value)
   }
 
   usernameChange = (e) => {
     this.setState({ errorMessage: '' })
+    localStorage.setItem('githubUsername', e.target.value);
     this.setState({
       username: e.target.value
     })
@@ -130,9 +134,9 @@ class App extends Component {
   render() {
     return (
       <div>
-        <div style={{padding: '2vmin'}}>
-          <input type="text" lable='Search' placeholder="Search" onChange={this.searchChange} />
-          <input type="text" lable='Username' placeholder="Username" onChange={this.usernameChange} />
+        <div style={{ padding: '2vmin' }}>
+          Search: <input type="text" lable='Search' placeholder="Search" onChange={this.searchChange} /><br/>
+          Username: <input type="text" lable='Username' placeholder="Username" onChange={this.usernameChange} value={this.state.username} />
           <button onClick={this.refreshClick}>
             Refresh
           </button>
@@ -144,7 +148,7 @@ class App extends Component {
             <FeedItems feedItems={this.state.filteredFeed} username={this.state.username} handler={this.handler} />
           </div>
           <div>
-            <center><h1>Read later</h1></center>
+            <center><h1>Remembered events</h1></center>
             <FeedItems feedItems={this.state.filteredReadLater} username={this.state.username} handler={this.handler} />
           </div>
         </div>
