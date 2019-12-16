@@ -146,7 +146,7 @@ class App extends Component {
     return (
       <div>
         <div style={{ padding: '2vmin' }}>
-          Username: <input type="text" lable='Username' placeholder="Username" onChange={this.usernameChange} value={this.state.username} />
+          Github username: <input type="text" lable='Username' placeholder="Username" onChange={this.usernameChange} value={this.state.username} />
           <button onClick={this.refreshClick}>
             Update username
           </button>
@@ -155,10 +155,11 @@ class App extends Component {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))' }}>
           <div>
-            <center>
-            <button style={{ float: 'right', padding: '1vmin', marginRight: '2vmin' }} onClick={this.feedButtonClick}>
+          <button style={{ float: 'right', padding: '1vmin', marginRight: '2vmin' }} onClick={this.feedButtonClick}>
               {this.state.hideFeed ? 'Show feed' : 'Hide feed'}
               </button>
+            <center>
+            
               <h2>Latest github events</h2>
             </center>
             { !this.state.hideFeed ?
