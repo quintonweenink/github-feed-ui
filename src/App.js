@@ -19,17 +19,17 @@ class App extends Component {
 
   componentDidMount() {
     this.props.fetchEvents(this.state.username)
-      this.props.putReadLater([], this.state.username)
+    this.props.putReadLater([], this.state.username)
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.events !== undefined && prevProps.events !== this.props.events) {
-     this.filterFeed()
+     this.filterFeed(this.state.search)
     }
   }
 
-  filterFeed() {
-    const searchValue = this.state.search.toLowerCase()
+  filterFeed(searchValue) {
+    searchValue = searchValue.toLowerCase()
 
     const filteredResult = this.props.events.filter((event) => {
       return event.repo.description.toLowerCase().search(searchValue) !== -1 ||
@@ -51,7 +51,7 @@ class App extends Component {
   searchChange = (e) => {
     localStorage.setItem('githubSearch', e.target.value);
     this.setState({search: e.target.value})
-    this.filterFeed()
+    this.filterFeed(e.target.value)
   }
 
   usernameChange = (e) => {

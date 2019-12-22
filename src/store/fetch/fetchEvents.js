@@ -13,33 +13,33 @@ export function fetchEvents(username) {
                 if (res.message) {
                     throw (res);
                 }
-                const events = res
-                const result = events.map((event, index) => {
-                    event.repo.description = 'No description'
-                    event.readLater = false
-                    event.payload.action = event.payload.action ? event.payload.action : '-'
-                    return event
-                })
-                dispatch(fetchEventsSuccess({ events: result, username }))
+                const events = res             
 
                 const readMores = await fetch(`https://github-feed-quintonweenink.herokuapp.com/read-later/${username}`)
                     .then(res => res.json())
 
-                const repos = await Promise.all(events.map(event => {
-                    return fetch(event.repo.url)
-                        .then(res => res.json())
-                }))
-
-                const result2 = events.map((event, index) => {
-                    event.repo.description = repos[index].description ? repos[index].description : 'No description'
-                    event.repo.fetchedDetails = repos[index]
+                const result = events.map((event, index) => {
+                    event.repo.description = 'No description'
                     event.created_at = event.created_at.substring(0, 10);
                     event.readLater = readMores.items.some((id) => id === event.id)
                     event.payload.action = event.payload.action ? event.payload.action : '-'
                     return event
                 })
 
-                dispatch(fetchEventsSuccess({ events: result2, username }));
+                dispatch(fetchEventsSuccess({ events: result, username }))
+
+                const repos = await Promise.all(events.map(event => {
+                    return fetch(event.repo.url)
+                        .then(res => res.json())
+                }))
+
+                const resultExtra = events.map((event, index) => {
+                    event.repo.description = repos[index].description ? repos[index].description : 'No description'
+                    event.repo.fetchedDetails = repos[index]
+                    return event
+                })
+
+                dispatch(fetchEventsSuccess({ events: resultExtra, username }));
                 return res;
             })
             .catch(error => {
