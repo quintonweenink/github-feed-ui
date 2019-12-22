@@ -1,10 +1,10 @@
-export const FETCH_EVENTS_PENDING = 'FETCH_EVENTS_PENDING';
+export const FETCH_PENDING = 'FETCH_PENDING';
 export const FETCH_EVENTS_SUCCESS = 'FETCH_EVENTS_SUCCESS';
-export const FETCH_EVENTS_ERROR = 'FETCH_EVENTS_ERROR';
+export const FETCH_ERROR = 'FETCH_ERROR';
 
-export function fetchEventsPending() {
+export function fetchPending() {
     return {
-        type: FETCH_EVENTS_PENDING
+        type: FETCH_PENDING
     }
 }
 export function fetchEventsSuccess(payload) {
@@ -13,9 +13,9 @@ export function fetchEventsSuccess(payload) {
         payload: payload
     }
 }
-export function fetchEventsError(error) {
+export function fetchError(error) {
     return {
-        type: FETCH_EVENTS_ERROR,
+        type: FETCH_ERROR,
         error: error
     }
 }

@@ -3,8 +3,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import {fetchEvents} from './store/fetch/fetchEvents'
-import {putReadLater} from './store/fetch/fetchReadLater'
+import { fetchEvents } from './store/fetch/fetchEvents'
+import { putReadLater } from './store/fetch/fetchReadLater'
 
 import FeedItems from './components/feeditems';
 
@@ -19,23 +19,23 @@ class App extends Component {
 
   componentDidMount() {
     this.props.fetchEvents(this.state.username)
-      this.props.putReadLater([], this.state.username)
+    this.props.putReadLater([], this.state.username)
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.events !== undefined && prevProps.events !== this.props.events) {
-     this.filterFeed()
+      this.filterFeed()
     }
   }
 
   filterFeed() {
-    const searchValue = this.state.search
+    const searchValue = this.state.search.toLowerCase()
 
     const filteredResult = this.props.events.filter((event) => {
-      return event.repo.description.toLowerCase().search(searchValue.toLowerCase()) !== -1 ||
-        event.repo.name.toLowerCase().search(searchValue.toLowerCase()) !== -1 ||
-        event.payload.action.toLowerCase().search(searchValue.toLowerCase()) !== -1 ||
-        event.created_at.substring(0, 10).toLowerCase().search(searchValue.toLowerCase()) !== -1;
+      return event.repo.description.toLowerCase().search(searchValue) !== -1 ||
+        event.repo.name.toLowerCase().search(searchValue) !== -1 ||
+        event.payload.action.toLowerCase().search(searchValue) !== -1 ||
+        event.created_at.toLowerCase().search(searchValue) !== -1;
     });
 
     const readLater = filteredResult.filter((event) => {
@@ -50,17 +50,12 @@ class App extends Component {
 
   searchChange = (e) => {
     localStorage.setItem('githubSearch', e.target.value);
-    this.setState({search: e.target.value})
+    this.setState({ search: e.target.value })
     this.filterFeed()
   }
 
-  usernameChange = (e) => {
-    const username = e.target.value
-    this.setState({username: username})
-    localStorage.setItem('githubUsername', username);
-  }
-
   refreshClick = (e) => {
+    localStorage.setItem('githubUsername', this.state.username);
     this.props.fetchEvents(this.state.username);
     this.props.putReadLater([], this.state.username)
   }
@@ -75,7 +70,7 @@ class App extends Component {
     return (
       <div>
         <div style={{ padding: '2vmin' }}>
-          Github username: <input type="text" lable='Username' placeholder="Username" onChange={this.usernameChange} value={this.state.username} />
+          Github username: <input type="text" lable='Username' placeholder="Username" value={this.state.username} />
           <button onClick={this.refreshClick}>
             Update username
           </button>
@@ -84,16 +79,16 @@ class App extends Component {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))' }}>
           <div>
-          <button style={{ float: 'right', padding: '1vmin', marginRight: '2vmin' }} onClick={this.feedButtonClick}>
+            <button style={{ float: 'right', padding: '1vmin', marginRight: '2vmin' }} onClick={this.feedButtonClick}>
               {this.state.hideFeed ? 'Show feed' : 'Hide feed'}
-              </button>
+            </button>
             <center>
-            
+
               <h2>Latest github events</h2>
             </center>
-            { !this.state.hideFeed ?
-            <FeedItems feedItems={this.state.filteredFeed} username={this.state.username} handler={this.handler} />
-            : <center>...</center>
+            {!this.state.hideFeed ?
+              <FeedItems feedItems={this.state.filteredFeed} username={this.state.username} handler={this.handler} />
+              : <center>...</center>
             }
           </div>
           <div>
