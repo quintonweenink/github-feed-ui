@@ -1,10 +1,10 @@
-import { fetchPending, fetchEventsSuccess, fetchError } from '../actions/eventActions';
+import { fetchPending, fetchEventsSuccess, fetchEventsError } from '../actions/eventActions';
 
 export function fetchEvents(username) {
     return dispatch => {
         dispatch(fetchPending());
         if (!username || username === '') {
-            dispatch(fetchError('Username field is empty'))
+            dispatch(fetchEventsError('Username field is empty'))
             return
         }
         fetch(`https://api.github.com/users/${username}/received_events`)
@@ -43,7 +43,7 @@ export function fetchEvents(username) {
                 return res;
             })
             .catch(error => {
-                dispatch(fetchError(error.message));
+                dispatch(fetchEventsError(error.message));
             })
     }
 }

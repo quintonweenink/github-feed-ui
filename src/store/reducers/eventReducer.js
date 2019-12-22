@@ -1,4 +1,4 @@
-import {FETCH_PENDING, FETCH_EVENTS_SUCCESS, FETCH_ERROR} from '../actions/eventActions';
+import {FETCH_PENDING, FETCH_EVENTS_SUCCESS, FETCH_ERROR, FETCH_EVENTS_ERROR} from '../actions/eventActions';
 import {PUT_READ_LATER_SUCCESS, REMOVE_READ_LATER_SUCCESS } from '../actions/readLaterActions';
 
 const initialState = {
@@ -21,6 +21,13 @@ export default function eventsReducer(state = initialState, action) {
                 ...state,
                 pending: false,
                 error: action.error
+            }
+        case FETCH_EVENTS_ERROR:
+            return {
+                ...state,
+                pending: false,
+                error: action.error,
+                events: []
             }
         case FETCH_EVENTS_SUCCESS:
             return {
