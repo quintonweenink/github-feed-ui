@@ -18,7 +18,8 @@ class FeedItems extends Component {
   render() {
     return (
       <div>
-        <h3>{!this.props.feedItems || this.props.feedItems.length < 1 ? <center>No Items</center> : ""}</h3>
+        {this.props.pending ? <h3><center>Loading...</center></h3> :
+          <h3>{!this.props.feedItems || this.props.feedItems.length < 1 ? <center>No Items</center> : ""}</h3>}
         {this.props.feedItems.map((feedItem) => (
           <div style={{ padding: '1vmin' }} key={feedItem.id}>
             <div >
@@ -51,7 +52,8 @@ class FeedItems extends Component {
 };
 
 const mapStateToProps = state => ({
-  username: state.username
+  username: state.username,
+  pending: state.pending
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({

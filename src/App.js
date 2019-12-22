@@ -19,12 +19,12 @@ class App extends Component {
 
   componentDidMount() {
     this.props.fetchEvents(this.state.username)
-    this.props.putReadLater([], this.state.username)
+      this.props.putReadLater([], this.state.username)
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.events !== undefined && prevProps.events !== this.props.events) {
-      this.filterFeed()
+     this.filterFeed()
     }
   }
 
@@ -50,8 +50,12 @@ class App extends Component {
 
   searchChange = (e) => {
     localStorage.setItem('githubSearch', e.target.value);
-    this.setState({ search: e.target.value })
+    this.setState({search: e.target.value})
     this.filterFeed()
+  }
+
+  usernameChange = (e) => {
+    this.setState({username: e.target.value})
   }
 
   refreshClick = (e) => {
@@ -70,7 +74,7 @@ class App extends Component {
     return (
       <div>
         <div style={{ padding: '2vmin' }}>
-          Github username: <input type="text" lable='Username' placeholder="Username" value={this.state.username} />
+          Github username: <input type="text" lable='Username' placeholder="Username" onChange={this.usernameChange} value={this.state.username} />
           <button onClick={this.refreshClick}>
             Update username
           </button>
@@ -79,16 +83,16 @@ class App extends Component {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))' }}>
           <div>
-            <button style={{ float: 'right', padding: '1vmin', marginRight: '2vmin' }} onClick={this.feedButtonClick}>
+          <button style={{ float: 'right', padding: '1vmin', marginRight: '2vmin' }} onClick={this.feedButtonClick}>
               {this.state.hideFeed ? 'Show feed' : 'Hide feed'}
-            </button>
+              </button>
             <center>
-
+            
               <h2>Latest github events</h2>
             </center>
-            {!this.state.hideFeed ?
-              <FeedItems feedItems={this.state.filteredFeed} username={this.state.username} handler={this.handler} />
-              : <center>...</center>
+            { !this.state.hideFeed ?
+            <FeedItems feedItems={this.state.filteredFeed} username={this.state.username} handler={this.handler} />
+            : <center>...</center>
             }
           </div>
           <div>
