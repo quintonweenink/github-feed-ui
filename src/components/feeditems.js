@@ -1,28 +1,18 @@
 import React, { Component } from 'react'
 
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
+import {putReadLater, removeReadLater} from '../store/fetch/fetchReadLater'
+
 class FeedItems extends Component {
 
   readLater = (feedItem) => {
     if (feedItem.readLater === false) {
-      fetch(`https://github-feed-quintonweenink.herokuapp.com/read-later/${this.props.username}`, {
-        method: 'PUT',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify([feedItem.id])
-      })
-        .then(res => res.json())
-        .then(res => console.log(res))
-      feedItem.readLater = true
+      this.props.putReadLater([feedItem], this.props.username)
     } else {
-      fetch(`https://github-feed-quintonweenink.herokuapp.com/read-later/${this.props.username}`, {
-        method: 'DELETE',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify([feedItem.id])
-      })
-        .then(res => res.json())
-        .then(res => console.log(res))
-      feedItem.readLater = false
+      this.props.removeReadLater([feedItem], this.props.username)
     }
-    this.props.handler(feedItem)
   }
 
   render() {
@@ -60,4 +50,16 @@ class FeedItems extends Component {
   }
 };
 
-export default FeedItems
+const mapStateToProps = state => ({
+  username: state.username
+})
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  putReadLater: putReadLater,
+  removeReadLater: removeReadLater
+}, dispatch)
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(FeedItems)

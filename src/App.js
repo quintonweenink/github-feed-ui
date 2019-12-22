@@ -1,102 +1,37 @@
 import React, { Component } from 'react';
-import './App.css';
+
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
+import {fetchEvents} from './store/fetch/fetchEvents'
+import {putReadLater} from './store/fetch/fetchReadLater'
 
 import FeedItems from './components/feeditems';
 
 class App extends Component {
   state = {
-    feed: [],
     filteredFeed: [],
     filteredReadLater: [],
     search: localStorage.getItem('githubSearch') ? localStorage.getItem('githubSearch') : '',
     username: localStorage.getItem('githubUsername') ? localStorage.getItem('githubUsername') : 'quintonweenink',
-    errorMessage: '',
     hideFeed: false
   }
 
-  constructor(props) {
-    super(props)
-
-    this.handler = this.handler.bind(this)
-  }
-
   componentDidMount() {
-    this.setup()
+    this.props.fetchEvents(this.state.username)
+      this.props.putReadLater([], this.state.username)
   }
 
-  async setup() {
-    try {
-      const events = await fetch(`https://api.github.com/users/${this.state.username}/received_events`)
-        .then(res => {
-          if (!res.ok) {
-            throw new Error(res.status)
-          }
-          return res
-        })
-        .then(res => res.json())
-        .catch(error => {
-          const message = error.message === '404' ? 'Github username not found' : 'API rate limit exceeded'
-          this.setState({ errorMessage: message })
-        })
-
-      await fetch(`https://github-feed-quintonweenink.herokuapp.com/read-later/${this.state.username}`, {
-        method: 'PUT',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify([])
-      })
-        .then(createRes => createRes.json())
-        .then(createRes => console.log(createRes))
-
-      const readMores = await fetch(`https://github-feed-quintonweenink.herokuapp.com/read-later/${this.state.username}`)
-        .then(res => res.json())
-
-      const repos = await Promise.all(events.map(event => {
-        return fetch(event.repo.url)
-          .then(res => res.json())
-      }))
-
-      const result = events.map((event, index) => {
-        event.repo.description = repos[index].description ? repos[index].description : 'No description'
-        event.repo.fetchedDetails = repos[index]
-        event.readLater = readMores.items.some((id) => id === event.id)
-        event.payload.action = event.payload.action ? event.payload.action : '-'
-        return event
-      })
-
-      const readLater = result.filter((event, index) => {
-        return event.readLater
-      })
-
-      this.setState({
-        feed: result,
-        filteredFeed: result,
-        filteredReadLater: readLater
-      })
-
-      this.filterFeed(this.state.search)
-    } catch (error) {
-      console.log(error)
+  componentDidUpdate(prevProps) {
+    if (this.props.events !== undefined && prevProps.events !== this.props.events) {
+     this.filterFeed()
     }
   }
 
-  handler(feedItem) {
-    const result = this.state.feed
+  filterFeed() {
+    const searchValue = this.state.search
 
-    result.forEach((event, index) => {
-      if (event.id === feedItem.id) {
-        result[index] = feedItem
-      }
-    })
-
-    this.setState({
-      feed: result
-    })
-
-    this.filterFeed(this.state.search)
-  }
-
-  filterFeed(searchValue) {
-    const filteredResult = this.state.feed.filter((event) => {
+    const filteredResult = this.props.events.filter((event) => {
       return event.repo.description.toLowerCase().search(searchValue.toLowerCase()) !== -1 ||
         event.repo.name.toLowerCase().search(searchValue.toLowerCase()) !== -1 ||
         event.payload.action.toLowerCase().search(searchValue.toLowerCase()) !== -1 ||
@@ -108,7 +43,6 @@ class App extends Component {
     })
 
     this.setState({
-      search: searchValue,
       filteredFeed: filteredResult,
       filteredReadLater: readLater
     })
@@ -116,24 +50,19 @@ class App extends Component {
 
   searchChange = (e) => {
     localStorage.setItem('githubSearch', e.target.value);
-    this.filterFeed(e.target.value)
+    this.setState({search: e.target.value})
+    this.filterFeed()
   }
 
   usernameChange = (e) => {
-    this.setState({ errorMessage: '' })
-    localStorage.setItem('githubUsername', e.target.value);
-    this.setState({
-      username: e.target.value
-    })
+    const username = e.target.value
+    this.setState({username: username})
+    localStorage.setItem('githubUsername', username);
   }
 
   refreshClick = (e) => {
-    this.setState({
-      feed: [],
-      filteredFeed: [],
-      filteredReadLater: []
-    })
-    this.setup()
+    this.props.fetchEvents(this.state.username);
+    this.props.putReadLater([], this.state.username)
   }
 
   feedButtonClick = (e) => {
@@ -150,7 +79,7 @@ class App extends Component {
           <button onClick={this.refreshClick}>
             Update username
           </button>
-          <p style={{ color: 'red  ' }}>{this.state.errorMessage}</p>
+          <p style={{ color: 'red  ' }}>{this.props.error}</p>
           Search: <input type="text" lable='Search' placeholder="Search" onChange={this.searchChange} value={this.state.search} />
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))' }}>
@@ -177,4 +106,19 @@ class App extends Component {
   }
 }
 
-export default App;
+const mapStateToProps = state => ({
+  error: state.error,
+  events: state.events,
+  username: state.username,
+  pending: state.pending
+})
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  fetchEvents: fetchEvents,
+  putReadLater: putReadLater
+}, dispatch)
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App);
