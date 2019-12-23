@@ -1,4 +1,4 @@
-import { putReadLaterSuccess, removeReadLaterSuccess} from '../actions/readLaterActions';
+import { putReadLaterSuccess, removeReadLaterSuccess } from '../actions/readLaterActions';
 
 import {
     fetchError, fetchPending

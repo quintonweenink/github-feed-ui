@@ -41,7 +41,6 @@ class FeedItems extends Component {
                 </button>
                 <h3 style={{ margin: '1vmin' }}>{feedItem.repo.name} - {feedItem.created_at.substring(0, 10)}</h3>
                 <h4 style={{ margin: '1vmin' }}>{feedItem.repo.description}</h4>
-
               </div>
             </div>
           </div>
