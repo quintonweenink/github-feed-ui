@@ -75,32 +75,28 @@ class App extends Component {
       <div>
         <div style={{ padding: '2vmin' }}>
           Github username: <input type="text" lable='Username' placeholder="Username" onChange={this.usernameChange} value={this.state.username} />
-          <button onClick={this.refreshClick}>
-            Update username
-          </button>
+          <button onClick={this.refreshClick}>Update username</button>
           <p style={{ color: 'red  ' }}>{this.props.error}</p>
           Search: <input type="text" lable='Search' placeholder="Search" onChange={this.searchChange} value={this.state.search} />
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))' }}>
           <div>
-          <button style={{ float: 'right', padding: '1vmin', marginRight: '2vmin' }} onClick={this.feedButtonClick}>
-              {this.state.hideFeed ? 'Show feed' : 'Hide feed'}
-              </button>
+            <button style={{ float: 'right', padding: '1vmin', marginRight: '2vmin' }} onClick={this.feedButtonClick}>
+                {this.state.hideFeed ? 'Show feed' : 'Hide feed'}
+            </button>
             <center>
-            
               <h2>Latest github events</h2>
             </center>
             { !this.state.hideFeed ?
             <FeedItems feedItems={this.state.filteredFeed} username={this.state.username} handler={this.handler} />
-            : <center>...</center>
-            }
+            : <center>...</center>}
           </div>
           <div>
             <center><h2>Remembered events</h2></center>
             <FeedItems feedItems={this.state.filteredReadLater} username={this.state.username} handler={this.handler} />
           </div>
         </div>
-      </div >
+    </div >
     )
   }
 }

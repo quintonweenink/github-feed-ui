@@ -13,7 +13,7 @@ export function fetchEvents(username) {
                 if (res.message) {
                     throw (res);
                 }
-                const events = res             
+                const events = res
 
                 const readMores = await fetch(`https://github-feed-quintonweenink.herokuapp.com/read-later/${username}`)
                     .then(res => res.json())
