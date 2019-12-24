@@ -1,5 +1,33 @@
 import { fetchPending, fetchEventsSuccess, fetchEventsError } from '../actions/eventActions';
 
+
+
+async function addInitialDataAndReadMores(events, username) {
+    const readMores = await fetch(`https://github-feed-quintonweenink.herokuapp.com/read-later/${username}`)
+        .then(res => res.json());
+    const result = events.map((event, index) => {
+        event.repo.description = 'No description';
+        event.created_at = event.created_at.substring(0, 10);
+        event.readLater = readMores.items.some((id) => id === event.id);
+        event.payload.action = event.payload.action ? event.payload.action : '-';
+        return event;
+    });
+    return result;
+}
+
+async function getAdditionalRepoDetails(events) {
+    const repos = await Promise.all(events.map(event => {
+        return fetch(event.repo.url)
+            .then(res => res.json());
+    }));
+    const result = events.map((event, index) => {
+        event.repo.description = repos[index].description ? repos[index].description : 'No description';
+        event.repo.fetchedDetails = repos[index];
+        return event;
+    });
+    return result;
+}
+
 export function fetchEvents(username) {
     return dispatch => {
         dispatch(fetchPending());
@@ -13,37 +41,17 @@ export function fetchEvents(username) {
                 if (res.message) {
                     throw (res);
                 }
-                const events = res
 
-                const readMores = await fetch(`https://github-feed-quintonweenink.herokuapp.com/read-later/${username}`)
-                    .then(res => res.json())
+                const events = await addInitialDataAndReadMores(res, username);
+                dispatch(fetchEventsSuccess({ events: events, username }))
 
-                const result = events.map((event, index) => {
-                    event.repo.description = 'No description'
-                    event.created_at = event.created_at.substring(0, 10);
-                    event.readLater = readMores.items.some((id) => id === event.id)
-                    event.payload.action = event.payload.action ? event.payload.action : '-'
-                    return event
-                })
+                const eventsExtra = await getAdditionalRepoDetails(events);
+                dispatch(fetchEventsSuccess({ events: eventsExtra, username }));
 
-                dispatch(fetchEventsSuccess({ events: result, username }))
-
-                const repos = await Promise.all(events.map(event => {
-                    return fetch(event.repo.url)
-                        .then(res => res.json())
-                }))
-
-                const resultExtra = events.map((event, index) => {
-                    event.repo.description = repos[index].description ? repos[index].description : 'No description'
-                    event.repo.fetchedDetails = repos[index]
-                    return event
-                })
-
-                dispatch(fetchEventsSuccess({ events: resultExtra, username }));
-                return res;
+                return eventsExtra;
             })
             .catch(error => {
                 dispatch(fetchEventsError(error.message));
             })
-    }
+        }
 }

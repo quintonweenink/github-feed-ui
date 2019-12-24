@@ -24,7 +24,7 @@ class App extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.events !== undefined && prevProps.events !== this.props.events) {
-     this.filterFeed(this.state.search)
+      this.filterFeed(this.state.search)
     }
   }
 
@@ -50,12 +50,12 @@ class App extends Component {
 
   searchChange = (e) => {
     localStorage.setItem('githubSearch', e.target.value);
-    this.setState({search: e.target.value})
+    this.setState({ search: e.target.value })
     this.filterFeed(e.target.value)
   }
 
   usernameChange = (e) => {
-    this.setState({username: e.target.value})
+    this.setState({ username: e.target.value })
   }
 
   refreshClick = (e) => {
@@ -82,21 +82,21 @@ class App extends Component {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))' }}>
           <div>
             <button style={{ float: 'right', padding: '1vmin', marginRight: '2vmin' }} onClick={this.feedButtonClick}>
-                {this.state.hideFeed ? 'Show feed' : 'Hide feed'}
+              {this.state.hideFeed ? 'Show feed' : 'Hide feed'}
             </button>
             <center>
               <h2>Latest github events</h2>
             </center>
-            { !this.state.hideFeed ?
-            <FeedItems feedItems={this.state.filteredFeed} username={this.state.username} handler={this.handler} />
-            : <center>...</center>}
+            {!this.state.hideFeed ?
+              <FeedItems feedItems={this.state.filteredFeed} username={this.state.username} handler={this.handler} />
+              : <center>...</center>}
           </div>
           <div>
             <center><h2>Remembered events</h2></center>
             <FeedItems feedItems={this.state.filteredReadLater} username={this.state.username} handler={this.handler} />
           </div>
         </div>
-    </div >
+      </div >
     )
   }
 }
